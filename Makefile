@@ -12,13 +12,13 @@ STAGE?=dev
 
 .PHONY: all dev build clean
 
+dev: hugo.toml
+	hugo server -D
+
 all: build
 
 build: hugo.toml
-	hugo build -D
-
-dev: hugo.toml
-	hugo server -D
+	hugo build -D --minify
 
 clean:
 	rm -rf public
