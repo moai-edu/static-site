@@ -1,0 +1,9 @@
+[project]
+name = "static-site"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jinja2-cli>=0.8.2",
+]

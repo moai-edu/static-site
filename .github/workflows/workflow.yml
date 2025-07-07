@@ -1,0 +1,163 @@
+name: CI/CD Pipeline
+
+on:
+    push:
+        branches:
+            - main
+            - develop
+
+jobs:
+    prepare:
+        runs-on: ubuntu-latest
+        outputs:
+            should_setup: ${{ steps.parse-commit.outputs.should_setup }}
+            should_teardown: ${{ steps.parse-commit.outputs.should_teardown }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - id: parse-commit
+              run: |
+                  MESSAGE=$(git log -1 --pretty=%B)
+                  echo "Commit message: $MESSAGE"
+                  if [[ "$MESSAGE" == *"SETUP"* ]]; then
+                      echo "should_setup=true" >> $GITHUB_OUTPUT
+                  fi
+                  if [[ "$MESSAGE" == *"TEARDOWN"* ]]; then
+                      echo "should_teardown=true" >> $GITHUB_OUTPUT
+                  fi
+
+    setup:
+        needs: [prepare]
+        if: ${{ needs.prepare.outputs.should_setup == 'true' }}
+        runs-on: ubuntu-latest
+        env:
+            HUGO_VERSION: 0.147.9
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive # Set to recursive for nested submodules
+            # 安装 pnpm
+            - uses: pnpm/action-setup@v4
+              name: Install pnpm
+              with:
+                  version: 10
+                  run_install: false
+
+            # 配置 Node.js 并启用 pnpm 缓存
+            - name: Configure Node.js with pnpm cache
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "21"
+                  cache: "pnpm" # 现在 pnpm 已安装，可以启用缓存
+
+            # 设置 Python 环境
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.12"
+                  cache: "pip"
+
+            # 安装系统工具
+            - name: Install system dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y make
+
+            # 安装Node.js项目依赖
+            - name: Install Node.js dependencies
+              run: pnpm install --frozen-lockfile
+
+            # 安装 Python 依赖（如果有 requirements.txt）
+            - name: Install Python dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  if [ -f requirements.txt ]; then
+                      pip install -r requirements.txt
+                  fi
+
+            # 安装 Hugo
+            - name: Install Hugo CLI
+              run: |
+                  wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.147.9/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+                  && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+            # 部署到 AWS
+            - name: Deploy to AWS (Development or Production)
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_REGION: "us-east-1"
+                  # For maximum backward compatibility with Hugo modules
+                  HUGO_ENVIRONMENT: production
+                  HUGO_ENV: production
+              run: |
+                  if [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+                    echo "Deploying to Production environment..."
+                    STAGE=prod make setup
+                  fi
+                  if [ "${GITHUB_REF}" == "refs/heads/develop" ]; then
+                    echo "Deploying to Development environment..."
+                    STAGE=dev make setup
+                  fi
+
+    teardown:
+        needs: [prepare]
+        if: ${{ needs.prepare.outputs.should_teardown == 'true' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            # 安装 pnpm
+            - uses: pnpm/action-setup@v4
+              name: Install pnpm
+              with:
+                  version: 10
+                  run_install: false
+
+            # 设置 Node.js 环境并启用 pnpm 缓存
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "21"
+                  cache: "pnpm" # 现在 pnpm 已安装，可以启用缓存
+
+            # 设置 Python 环境
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.12"
+                  cache: "pip"
+
+            # 安装系统工具
+            - name: Install system dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y make
+
+            # 安装Node.js项目依赖
+            - name: Install Node.js dependencies
+              run: pnpm install --frozen-lockfile
+
+            # 安装 Python 依赖（如果有 requirements.txt）
+            - name: Install Python dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  if [ -f requirements.txt ]; then
+                      pip install -r requirements.txt
+                  fi
+
+            - name: Teardown from AWS (Development or Production)
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_REGION: "us-east-1"
+              run: |
+                  if [ "${GITHUB_REF}" == "refs/heads/main" ]; then
+                    echo "Tearing down the Production environment..."
+                    STAGE=prod make teardown
+                  fi
+                  if [ "${GITHUB_REF}" == "refs/heads/develop" ]; then
+                    echo "Tearing down the Development environment..."
+                    STAGE=dev make teardown
+                  fi
