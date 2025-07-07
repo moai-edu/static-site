@@ -79,7 +79,7 @@ jobs:
             # 安装 Hugo
             - name: Install Hugo CLI
               run: |
-                  wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.147.9/hugo_extended_{HUGO_VERSION}_linux-amd64.deb \
+                  wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.147.9/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
                   && sudo dpkg -i ${{ runner.temp }}/hugo.deb
 
             # 部署到 AWS
