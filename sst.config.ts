@@ -3,7 +3,7 @@
 export default $config({
     app(input) {
         return {
-            name: "static-site",
+            name: "MoaiEdu-StaticSite",
             home: "aws",
             removal: "remove",
         };
