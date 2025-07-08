@@ -38,6 +38,8 @@ jobs:
         environment: dev # Associate with the 'development' environment
         steps:
             - uses: actions/checkout@v4
+              with:
+                  submodules: recursive # Set to recursive for nested submodules
 
             - uses: pnpm/action-setup@v4
               name: Install pnpm
@@ -48,8 +50,8 @@ jobs:
             - name: Configure Node.js with pnpm cache
               uses: actions/setup-node@v4
               with:
-                  node-version: "21"
-                  cache: "pnpm"
+                  node-version: '21'
+                  cache: 'pnpm'
 
             - name: Install Node.js dependencies
               run: pnpm install --frozen-lockfile
@@ -62,8 +64,8 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v4
               with:
-                  python-version: "3.12"
-                  cache: "pip"
+                  python-version: '3.12'
+                  cache: 'pip'
 
             - name: Install Python dependencies
               run: |
@@ -83,7 +85,7 @@ jobs:
                   STAGE: dev
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  AWS_REGION: "us-east-1"
+                  AWS_REGION: 'us-east-1'
                   SST_AWS_REGION: ${{ vars.SST_AWS_REGION }}
                   # NEXT_AUTH_SECRET is now retrieved from the 'development' environment secrets
                   NEXT_AUTH_SECRET: ${{ secrets.NEXT_AUTH_SECRET }}
@@ -102,6 +104,8 @@ jobs:
         environment: prod # Associate with the 'production' environment
         steps:
             - uses: actions/checkout@v4
+              with:
+                  submodules: recursive # Set to recursive for nested submodules
 
             - uses: pnpm/action-setup@v4
               name: Install pnpm
@@ -112,8 +116,8 @@ jobs:
             - name: Configure Node.js with pnpm cache
               uses: actions/setup-node@v4
               with:
-                  node-version: "21"
-                  cache: "pnpm"
+                  node-version: '21'
+                  cache: 'pnpm'
 
             - name: Install Node.js dependencies
               run: pnpm install --frozen-lockfile
@@ -126,8 +130,8 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v4
               with:
-                  python-version: "3.12"
-                  cache: "pip"
+                  python-version: '3.12'
+                  cache: 'pip'
 
             - name: Install Python dependencies
               run: |
@@ -147,7 +151,7 @@ jobs:
                   STAGE: prod
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  AWS_REGION: "us-east-1"
+                  AWS_REGION: 'us-east-1'
                   SST_AWS_REGION: ${{ vars.SST_AWS_REGION }}
                   # NEXT_AUTH_SECRET is now retrieved from the 'production' environment secrets
                   NEXT_AUTH_SECRET: ${{ secrets.NEXT_AUTH_SECRET }}
@@ -174,8 +178,8 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: "21"
-                  cache: "pnpm"
+                  node-version: '21'
+                  cache: 'pnpm'
 
             - name: Install system dependencies
               run: |
@@ -190,7 +194,7 @@ jobs:
                   STAGE: dev
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  AWS_REGION: "us-east-1"
+                  AWS_REGION: 'us-east-1'
                   SST_AWS_REGION: ${{ vars.SST_AWS_REGION }}
                   # NEXT_AUTH_SECRET is now retrieved from the 'development' environment secrets
                   NEXT_AUTH_SECRET: ${{ secrets.NEXT_AUTH_SECRET }}
@@ -217,8 +221,8 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: "21"
-                  cache: "pnpm"
+                  node-version: '21'
+                  cache: 'pnpm'
 
             - name: Install system dependencies
               run: |
@@ -233,7 +237,7 @@ jobs:
                   STAGE: prod
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  AWS_REGION: "us-east-1"
+                  AWS_REGION: 'us-east-1'
                   SST_AWS_REGION: ${{ vars.SST_AWS_REGION }}
                   # NEXT_AUTH_SECRET is now retrieved from the 'production' environment secrets
                   NEXT_AUTH_SECRET: ${{ secrets.NEXT_AUTH_SECRET }}
