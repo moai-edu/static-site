@@ -1,1 +1,1 @@
-export * from "./static_site";
+export * from './static_site'
