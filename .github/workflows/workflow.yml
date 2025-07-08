@@ -105,13 +105,26 @@ jobs:
                   node-version: "21"
                   cache: "pnpm"
 
+            - name: Install Node.js dependencies
+              run: pnpm install --frozen-lockfile
+
             - name: Install system dependencies
               run: |
                   sudo apt-get update
                   sudo apt-get install -y make
 
-            - name: Install Node.js dependencies
-              run: pnpm install --frozen-lockfile
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.12"
+                  cache: "pip"
+
+            - name: Install Python dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  if [ -f requirements.txt ]; then
+                      pip install -r requirements.txt
+                  fi
 
             - name: Deploy to AWS (Production)
               env:
