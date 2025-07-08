@@ -33,6 +33,8 @@ jobs:
         # This job runs only if 'should_setup' is true and the branch is 'develop'
         if: ${{ needs.prepare.outputs.should_setup == 'true' && github.ref == 'refs/heads/develop' }}
         runs-on: ubuntu-latest
+        env:
+            HUGO_VERSION: 0.147.9
         environment: dev # Associate with the 'development' environment
         steps:
             - uses: actions/checkout@v4
@@ -95,6 +97,8 @@ jobs:
         # This job runs only if 'should_setup' is true and the branch is 'main'
         if: ${{ needs.prepare.outputs.should_setup == 'true' && github.ref == 'refs/heads/main' }}
         runs-on: ubuntu-latest
+        env:
+            HUGO_VERSION: 0.147.9
         environment: prod # Associate with the 'production' environment
         steps:
             - uses: actions/checkout@v4
