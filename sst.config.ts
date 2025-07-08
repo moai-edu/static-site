@@ -5,6 +5,11 @@ export default $config({
         return {
             name: "MoaiEdu-StaticSite",
             home: "aws",
+            providers: {
+                aws: {
+                    region: process.env.SST_AWS_REGION!,
+                },
+            },
             removal: "remove",
         };
     },
