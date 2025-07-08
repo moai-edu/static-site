@@ -1,3 +1,3 @@
-# Moaiedu Static Site
+# MoaiEdu Static Site
 
-This is the static site for Moaiedu.
+This is the static site for MoaiEdu.
