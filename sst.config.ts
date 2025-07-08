@@ -1,5 +1,8 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
+// 必须在环境变量中指定sst部署到哪个AZ！！！
+const region: string = process.env.SST_AWS_REGION!;
+
 export default $config({
     app(input) {
         return {
@@ -7,7 +10,7 @@ export default $config({
             home: "aws",
             providers: {
                 aws: {
-                    region: process.env.SST_AWS_REGION!,
+                    region,
                 },
             },
             removal: "remove",
